@@ -82,8 +82,7 @@ jobs:
 
           sudo mkdir -p /mnt/build_wrt
           sudo chown $USER:$USER /mnt/build_wrt
-          sudo ln -s /mnt/build_wrt $GITHUB_WORKSPACE/wrt
-          mkdir -p $CCACHE_DIR
+          sudo ln -s /mnt/build_wrt/wrt $GITHUB_WORKSPACE/wrt
 
       - name: Initialization Values
         run: |
@@ -96,7 +95,7 @@ jobs:
 
       - name: Clone Code
         run: |
-          git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_REPO ./wrt/
+          git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_REPO /mnt/build_wrt/wrt
 
           cd ./wrt/ && echo "WRT_HASH=$(git log -1 --pretty=format:'%h')" >> $GITHUB_ENV
 
@@ -105,6 +104,10 @@ jobs:
           if [ -f "$PROJECT_MIRRORS_FILE" ]; then
             sed -i '/.cn\//d; /tencent/d; /aliyun/d' "$PROJECT_MIRRORS_FILE"
           fi
+
+      - name: Prepare CCache Dir
+        run: |
+          mkdir -p $CCACHE_DIR
 
       - name: Check Scripts
         run: |

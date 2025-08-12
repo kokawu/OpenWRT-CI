@@ -200,7 +200,7 @@ jobs:
         run: |
           cd ./wrt/
 
-          make -j$(nproc) -l $(nproc) || make -j$(nproc) V=s
+          make -j"$(nproc)" V=sc --output-sync=recurse || make -j1 V=sc
 
       - name: Machine Information
         run: |

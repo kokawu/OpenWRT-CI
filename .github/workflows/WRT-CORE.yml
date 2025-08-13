@@ -109,6 +109,12 @@ jobs:
         run: |
           mkdir -p $CCACHE_DIR
 
+      - name: Configure CCache
+        run: |
+          echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=3G" >> $GITHUB_ENV
+          which ccache && ccache -M 3G || true
+
       - name: Check Scripts
         run: |
           find ./ -maxdepth 3 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
@@ -186,21 +192,21 @@ jobs:
 
           $GITHUB_WORKSPACE/Scripts/Settings.sh
 
-          make defconfig -j$(nproc) && make clean -j$(nproc)
+          make defconfig -j$(nproc)
 
       - name: Download Packages
         if: env.WRT_TEST != 'true'
         run: |
           cd ./wrt/
 
-          make download -j16
+          make download -j32
 
       - name: Compile Firmware
         if: env.WRT_TEST != 'true'
         run: |
           cd ./wrt/
 
-          make -j"$(nproc)" V=sc --output-sync=recurse || make -j1 V=sc
+          make -j"$(nproc)" --output-sync=recurse || make -j1 V=sc
 
       - name: Machine Information
         run: |
